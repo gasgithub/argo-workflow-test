@@ -8,11 +8,17 @@ Invalid value: "hostPath": hostPath volumes are not allowed to be used
 
 https://github.com/argoproj/argo-workflows/issues/1272
 
+changed workflow-controller-configmap  to use
+```
+  ContainerRuntimeExecutor: kubelet
+```
+
+
 
 https://github.com/argoproj/argo-workflows/issues/2581
 failed to save outputs: unexpected non 200 status code: 403, body: Forbidden (user=system:serviceaccount:argo:default, verb=get, resource=nodes, subresource=proxy
 
-
+```
 oc describe role/argo-role
 Name:         argo-role
 Labels:       <none>
@@ -40,8 +46,9 @@ PolicyRule:
   oc create clusterrolebinding argo-admin --clusterrole=admin --serviceaccount=argo:argo
   
   oc create clusterrolebinding argo-executor --clusterrole=argo-executor --serviceaccount=argo:default
-  
-  
+```  
+ 
+``` 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -66,3 +73,11 @@ rules:
   verbs:
   - get
   - watch
+```
+
+
+finally looks like this helps:
+
+```
+kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=argo:default --namespace=argo
+```
